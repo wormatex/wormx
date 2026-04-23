@@ -10507,3 +10507,219 @@ window.addEventListener("keydown", (p670) => {
         return orjinalSend.apply(this, arguments);
     };
 })();
+
+(function () {
+    const targetId = "game-cont";
+    const bgLayerId = "game-wormx-bg-layer";
+    const styleId = "game-wormx-bg-style";
+
+    const gameCont = document.getElementById(targetId);
+    if (!gameCont) return;
+
+    const bgUrl = URLSERV_WORMX + "/images/wormx.png";
+
+    // حذف أي طبقات أو مؤثرات كونفيتي/ثلج قديمة
+    try {
+        [
+            "game-wandering-confetti",
+            "confetti-wander-style",
+            "game-snow-layer",
+            "snow-style",
+            "xmas-confetti-layer",
+            "valday-confetti-layer"
+        ].forEach(function (id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        });
+
+        document.querySelectorAll(".wander-item, .snow-item, .confetti-item").forEach(function (el) {
+            el.remove();
+        });
+    } catch (e) {}
+
+    // تجهيز الحاوية
+    if (getComputedStyle(gameCont).position === "static") {
+        gameCont.style.position = "relative";
+    }
+    gameCont.style.overflow = "hidden";
+
+    // حذف الطبقة القديمة إذا موجودة
+    let oldLayer = document.getElementById(bgLayerId);
+    if (oldLayer) oldLayer.remove();
+
+    // إنشاء طبقة الخلفية
+    const bgLayer = document.createElement("div");
+    bgLayer.id = bgLayerId;
+    bgLayer.style.cssText = `
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+    `;
+    gameCont.prepend(bgLayer);
+
+    // إضافة الستايل مرة وحدة
+    if (!document.getElementById(styleId)) {
+        const style = document.createElement("style");
+        style.id = styleId;
+        style.textContent = `
+            #${bgLayerId} .wormx-bg-main,
+            #${bgLayerId} .wormx-bg-main::before,
+            #${bgLayerId} .wormx-bg-main::after {
+                position: absolute;
+                content: "";
+                inset: -18%;
+                pointer-events: none;
+                background-image: url("${bgUrl}");
+                background-repeat: no-repeat;
+                background-position: center center;
+                background-size: cover;
+                will-change: transform, filter, opacity;
+            }
+
+            #${bgLayerId} .wormx-bg-main {
+                inset: 0;
+                overflow: hidden;
+            }
+
+            #${bgLayerId} .wormx-bg-main::before {
+                filter: blur(22px) saturate(1.15) brightness(0.9);
+                opacity: 0.42;
+                transform: scale(1.22);
+                animation: wormxFloatA 20s ease-in-out infinite alternate;
+            }
+
+            #${bgLayerId} .wormx-bg-main::after {
+                filter: blur(42px) brightness(0.58);
+                opacity: 0.28;
+                transform: scale(1.32);
+                animation: wormxFloatB 28s ease-in-out infinite alternate;
+                mix-blend-mode: screen;
+            }
+
+            #${bgLayerId} .wormx-bg-image {
+                position: absolute;
+                inset: -12%;
+                background-image: url("${bgUrl}");
+                background-repeat: no-repeat;
+                background-position: center center;
+                background-size: cover;
+                filter: blur(12px) brightness(0.72) saturate(1.08);
+                opacity: 0.34;
+                transform: scale(1.12);
+                animation: wormxFloatMain 24s ease-in-out infinite alternate;
+                will-change: transform, filter;
+            }
+
+            #${bgLayerId} .wormx-bg-dark {
+                position: absolute;
+                inset: 0;
+                background:
+                    radial-gradient(circle at center, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.16) 38%, rgba(0,0,0,0.42) 68%, rgba(0,0,0,0.80) 100%),
+                    linear-gradient(180deg, rgba(0,0,0,0.34) 0%, rgba(0,0,0,0.12) 28%, rgba(0,0,0,0.12) 72%, rgba(0,0,0,0.42) 100%);
+                animation: wormxVignettePulse 12s ease-in-out infinite alternate;
+            }
+
+            #${bgLayerId} .wormx-bg-shadow {
+                position: absolute;
+                inset: 0;
+                box-shadow:
+                    inset 0 0 120px rgba(0,0,0,0.70),
+                    inset 0 0 220px rgba(0,0,0,0.55),
+                    inset 0 0 320px rgba(0,0,0,0.42);
+                opacity: 1;
+                animation: wormxShadowMove 10s ease-in-out infinite alternate;
+            }
+
+            #${targetId} > * {
+                position: relative;
+            }
+
+            #${bgLayerId} {
+                transform: translateZ(0);
+            }
+
+            @keyframes wormxFloatMain {
+                0% {
+                    transform: scale(1.12) translate3d(-2%, -1%, 0);
+                }
+                25% {
+                    transform: scale(1.16) translate3d(2%, -3%, 0);
+                }
+                50% {
+                    transform: scale(1.14) translate3d(4%, 2%, 0);
+                }
+                75% {
+                    transform: scale(1.18) translate3d(-3%, 3%, 0);
+                }
+                100% {
+                    transform: scale(1.13) translate3d(2%, -2%, 0);
+                }
+            }
+
+            @keyframes wormxFloatA {
+                0% {
+                    transform: scale(1.22) translate3d(-3%, 0, 0);
+                }
+                50% {
+                    transform: scale(1.27) translate3d(3%, -2%, 0);
+                }
+                100% {
+                    transform: scale(1.24) translate3d(-1%, 3%, 0);
+                }
+            }
+
+            @keyframes wormxFloatB {
+                0% {
+                    transform: scale(1.32) translate3d(2%, 1%, 0);
+                }
+                50% {
+                    transform: scale(1.36) translate3d(-4%, 2%, 0);
+                }
+                100% {
+                    transform: scale(1.33) translate3d(3%, -3%, 0);
+                }
+            }
+
+            @keyframes wormxVignettePulse {
+                0% {
+                    opacity: 0.92;
+                }
+                100% {
+                    opacity: 1;
+                }
+            }
+
+            @keyframes wormxShadowMove {
+                0% {
+                    transform: scale(1);
+                    opacity: 0.95;
+                }
+                100% {
+                    transform: scale(1.03);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    // بناء الطبقات
+    const bgMain = document.createElement("div");
+    bgMain.className = "wormx-bg-main";
+
+    const bgImage = document.createElement("div");
+    bgImage.className = "wormx-bg-image";
+
+    const bgDark = document.createElement("div");
+    bgDark.className = "wormx-bg-dark";
+
+    const bgShadow = document.createElement("div");
+    bgShadow.className = "wormx-bg-shadow";
+
+    bgLayer.appendChild(bgMain);
+    bgLayer.appendChild(bgImage);
+    bgLayer.appendChild(bgDark);
+    bgLayer.appendChild(bgShadow);
+})();
