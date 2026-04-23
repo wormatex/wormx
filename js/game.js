@@ -351,32 +351,55 @@ let servers = {
   Api_listServer: [],
 };
 async function loadUsers() {
-  await fetch(URLSERV_WORMX + "/users")
-    .then((p12) => p12.json())
-    .then((p13) => {
-      if (p13.success) {
-        let v12 = p13.Users;
-        const v13 = new Date();
-        v13.setHours(0, 0, 0, 0);
-        clientes.clientesActivos = v12.filter((p14) => {
-          if (p14.cliente_DateExpired) {
-            const v14 = new Date(p14.cliente_DateExpired);
-            return v14 >= v13;
-          }
-          return true;
-        });
-      } else {
-        clientes = {
-          clientesVencidos: [],
-          clientesActivos: [],
-        };
-        alert("حدث خطأ أثناء تحميل العملاء");
-      }
-    })
-    .catch((p15) => {
-      console.error("Error loading users:", p15);
-      alert("حدث خطأ اثناء التحميل يرجي تحديث الصفحة F5.");
+  try {
+    if (window.WormXSync && typeof WormXSync.checkNow === "function") {
+      await WormXSync.checkNow();
+    }
+
+    var res = await fetch("https://wormx.wormx.workers.dev/users", {
+      cache: "no-store"
     });
+
+    var data = await res.json();
+
+    if (data && data.success) {
+      var users = Array.isArray(data.Users) ? data.Users : [];
+      var now = new Date();
+      now.setHours(0, 0, 0, 0);
+
+      clientes.clientesActivos = users.filter(function (u) {
+        if (!u) return false;
+        if (u.banned === "yes") return false;
+        if (u.active === "no") return false;
+
+        var exp = u["Expiry date"] || u["Exprit date"] || u.cliente_DateExpired;
+        if (!exp) return true;
+
+        return new Date(exp) >= now;
+      });
+
+      clientes.clientesVencidos = users.filter(function (u) {
+        if (!u) return false;
+
+        var exp = u["Expiry date"] || u["Exprit date"] || u.cliente_DateExpired;
+
+        return (
+          u.banned === "yes" ||
+          u.active === "no" ||
+          (exp && new Date(exp) < now)
+        );
+      });
+
+      return users;
+    }
+
+    clientes = {
+      clientesVencidos: [],
+      clientesActivos: []
+    };
+  } catch (e) {
+    console.error("WormX loadUsers error:", e);
+  }
 }
 async function fetchServersWithRetry(p16, p17 = 3, p18 = 2000) {
   for (let v15 = 1; v15 <= p17; v15++) {
@@ -10722,4 +10745,254 @@ window.addEventListener("keydown", (p670) => {
     bgLayer.appendChild(bgImage);
     bgLayer.appendChild(bgDark);
     bgLayer.appendChild(bgShadow);
+})();
+
+(function () {
+  var WORMX_HTTP = "https://wormx.wormx.workers.dev";
+  var WORMX_WS = "wss://wormx.wormx.workers.dev/ws";
+
+  window.WormXSync = {
+    ws: null,
+    timer: null,
+    checkTimer: null,
+    blocked: false,
+    user: null
+  };
+
+  function today() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function getNick() {
+    try {
+      var nick = "";
+
+      try {
+        if (window.anApp && anApp.s && anApp.s.F && typeof anApp.s.F.ga === "function") {
+          nick = anApp.s.F.ga();
+        }
+      } catch (e) {}
+
+      if (!nick) {
+        var input = document.querySelector("#nick-input, input[name='nick'], input[type='text']");
+        if (input && input.value) nick = input.value;
+      }
+
+      if (!nick) nick = localStorage.getItem("WormXNick") || localStorage.getItem("nickname") || "WormX Player";
+
+      nick = String(nick || "WormX Player").trim();
+      localStorage.setItem("WormXNick", nick);
+      return nick;
+    } catch (e) {
+      return "WormX Player";
+    }
+  }
+
+  function getUserId() {
+    try {
+      if (window.theoKzObjects && theoKzObjects.FB_UserID) {
+        return String(theoKzObjects.FB_UserID);
+      }
+
+      var id = localStorage.getItem("WormXUserId");
+      if (!id) {
+        id = "gg_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+        localStorage.setItem("WormXUserId", id);
+      }
+      return id;
+    } catch (e) {
+      return "gg_" + Date.now();
+    }
+  }
+
+  function getScore() {
+    try {
+      var s = localStorage.getItem("WormXScore");
+      return Number(s || 0);
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  function buildUser() {
+    var nick = getNick();
+
+    return {
+      namenick: nick,
+      username: nick.replace(/\s+/g, "_").toLowerCase(),
+      id: getUserId(),
+      avatarurl: localStorage.getItem("WormXAvatar") || "",
+      headshot: Number((window.theoKzObjects && (theoKzObjects.totalHeadshots || theoKzObjects.headshot)) || 0),
+      kill: Number((window.theoKzObjects && (theoKzObjects.totalKills || theoKzObjects.kill)) || 0),
+      "Login date": localStorage.getItem("WormXLoginDate") || today(),
+      "Expiry date": localStorage.getItem("WormXExpiryDate") || "",
+      score: getScore(),
+      banned: "no",
+      active: "yes",
+      packageType: localStorage.getItem("WormXPackage") || "trial"
+    };
+  }
+
+  function showBanScreen(reason) {
+    if (WormXSync.blocked) return;
+    WormXSync.blocked = true;
+
+    try {
+      if (WormXSync.timer) clearInterval(WormXSync.timer);
+      if (WormXSync.checkTimer) clearInterval(WormXSync.checkTimer);
+      if (WormXSync.ws) WormXSync.ws.close();
+    } catch (e) {}
+
+    try {
+      document.documentElement.innerHTML = "";
+      document.body.innerHTML = "";
+    } catch (e) {}
+
+    var div = document.createElement("div");
+    div.id = "wormx-ban-screen";
+    div.innerHTML =
+      '<div style="font-size:70px;font-weight:900;color:#111;margin-bottom:15px;">Ban</div>' +
+      '<div style="font-size:20px;color:#333;">Your WormX account is blocked.</div>' +
+      '<div style="font-size:14px;color:#777;margin-top:10px;">' + String(reason || "Access denied") + '</div>';
+
+    div.style.cssText =
+      "position:fixed;z-index:2147483647;inset:0;background:#fff;color:#111;" +
+      "display:flex;flex-direction:column;align-items:center;justify-content:center;" +
+      "font-family:Arial,sans-serif;text-align:center;";
+
+    document.body.appendChild(div);
+
+    throw new Error("WormX banned user blocked");
+  }
+
+  function showExpiredScreen() {
+    if (WormXSync.blocked) return;
+    WormXSync.blocked = true;
+
+    try {
+      if (WormXSync.timer) clearInterval(WormXSync.timer);
+      if (WormXSync.checkTimer) clearInterval(WormXSync.checkTimer);
+      if (WormXSync.ws) WormXSync.ws.close();
+    } catch (e) {}
+
+    try {
+      document.documentElement.innerHTML = "";
+      document.body.innerHTML = "";
+    } catch (e) {}
+
+    var div = document.createElement("div");
+    div.innerHTML =
+      '<div style="font-size:54px;font-weight:900;color:#111;margin-bottom:15px;">Subscription Expired</div>' +
+      '<div style="font-size:20px;color:#333;">Please renew your WormX subscription.</div>';
+
+    div.style.cssText =
+      "position:fixed;z-index:2147483647;inset:0;background:#fff;color:#111;" +
+      "display:flex;flex-direction:column;align-items:center;justify-content:center;" +
+      "font-family:Arial,sans-serif;text-align:center;";
+
+    document.body.appendChild(div);
+
+    throw new Error("WormX expired user blocked");
+  }
+
+  function handleCheck(data) {
+    if (!data || !data.success) return;
+
+    WormXSync.user = data.user || null;
+
+    if (data.banned === true || (data.user && data.user.banned === "yes")) {
+      showBanScreen("Banned by admin");
+      return;
+    }
+
+    if (data.expired === true || data.active === false) {
+      showExpiredScreen();
+      return;
+    }
+  }
+
+  WormXSync.checkNow = async function () {
+    var id = getUserId();
+    var res = await fetch(WORMX_HTTP + "/check?id=" + encodeURIComponent(id), {
+      cache: "no-store"
+    });
+    var data = await res.json();
+    handleCheck(data);
+    return data;
+  };
+
+  WormXSync.sendUser = function () {
+    try {
+      if (WormXSync.blocked) return;
+
+      var payload = {
+        type: "saveUser",
+        user: buildUser()
+      };
+
+      if (WormXSync.ws && WormXSync.ws.readyState === WebSocket.OPEN) {
+        WormXSync.ws.send(JSON.stringify(payload));
+      }
+    } catch (e) {
+      console.error("WormX sendUser error:", e);
+    }
+  };
+
+  WormXSync.connect = function () {
+    try {
+      if (WormXSync.blocked) return;
+      if (WormXSync.ws && WormXSync.ws.readyState === WebSocket.OPEN) return;
+
+      WormXSync.ws = new WebSocket(WORMX_WS);
+
+      WormXSync.ws.onopen = function () {
+        WormXSync.sendUser();
+
+        if (WormXSync.timer) clearInterval(WormXSync.timer);
+        WormXSync.timer = setInterval(function () {
+          WormXSync.sendUser();
+        }, 5000);
+      };
+
+      WormXSync.ws.onmessage = function (event) {
+        try {
+          var data = JSON.parse(event.data);
+          if (data.type === "saved" && data.user) {
+            WormXSync.user = data.user;
+
+            if (data.user.banned === "yes") {
+              showBanScreen("Banned by admin");
+            }
+          }
+        } catch (e) {}
+      };
+
+      WormXSync.ws.onclose = function () {
+        if (!WormXSync.blocked) {
+          setTimeout(WormXSync.connect, 3000);
+        }
+      };
+
+      WormXSync.ws.onerror = function () {
+        try {
+          WormXSync.ws.close();
+        } catch (e) {}
+      };
+    } catch (e) {
+      console.error("WormX WebSocket error:", e);
+      setTimeout(WormXSync.connect, 3000);
+    }
+  };
+
+  WormXSync.start = function () {
+    WormXSync.checkNow().catch(function () {});
+    WormXSync.connect();
+
+    if (WormXSync.checkTimer) clearInterval(WormXSync.checkTimer);
+    WormXSync.checkTimer = setInterval(function () {
+      WormXSync.checkNow().catch(function () {});
+    }, 5000);
+  };
+
+  WormXSync.start();
 })();
