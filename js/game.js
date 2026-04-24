@@ -9509,79 +9509,55 @@ $(".description-text").replaceWith(`
   </div>
 `);
 
-$(".ui-tab").off("click.bmwTab").on("click.bmwTab", f119);
-
-$(".flag").off("click.bmwFlag").on("click.bmwFlag", function () {
-  var flagUrl = $(this).attr("value");
-
-  vO4.flag = flagUrl;
-
-  if (vO7 && vO7.containerImgS) {
-    vO7.containerImgS.texture = vO7.onclickServer;
-  }
-
-  retundFlagError();
-  console.log(flagUrl);
-});
-
-var regionBoxes = {
-  peru: ".servers-peru",
-  mexico: ".servers-mexico",
-  eeuu: ".servers-eeuu",
-  canada: ".servers-canada",
-  germania: ".servers-germania",
-  francia: ".servers-francia",
-  singapur: ".servers-singapur",
-  japon: ".servers-japon",
-  australia: ".servers-australia",
-  granbretana: ".servers-granbretana"
-};
-
-for (var a = 0; a < vO6.Api_listServer.length; a++) {
-  var serverUrl = vO6.Api_listServer[a].serverUrl;
-  var serverName = vO6.Api_listServer[a].name;
-  var serverRegion = vO6.Api_listServer[a].region;
-  var boxSelector = regionBoxes[serverRegion];
-
-  if (!boxSelector) continue;
-
-  var serverItem = document.createElement("p");
-
-  serverItem.id = serverRegion;
-  serverItem.className = "selectSala";
-  serverItem.innerHTML = serverName;
-  serverItem.value = serverUrl;
-
-  $(serverItem)
-    .attr("data-url", serverUrl)
-    .attr("data-name", serverName)
-    .attr("data-region", serverRegion)
-    .val(serverUrl);
-
-  $(boxSelector).prepend(serverItem);
-}
-
-$(".selectSala").off("click.bmwServer").on("click.bmwServer", function () {
-  var serverUrl = $(this).attr("data-url") || $(this).val();
-  var serverName = $(this).attr("data-name") || $(this).text().trim();
-
-  if (vO7 && typeof vO7.setServer === "function") {
-    vO7.setServer(serverUrl);
-  }
-
-  if (vO7 && vO7.containerImgS) {
-    vO7.containerImgS.texture = vO7.onclickServer;
-  }
-
-  retundFlagError();
-
-  window.server_url = serverUrl;
-
-  console.log("BMW SERVER:", serverName, serverUrl);
-
-  $("#mm-action-play").click();
-  $("#adbl-continue").click();
-});
+$(".ui-tab").on("click", f119);
+      $(".flag").click(function () {
+        let v546 = $(this).attr("value");
+        vO4.flag = v546;
+        vO7.containerImgS.texture = vO7.onclickServer;
+        retundFlagError();
+        console.log(v546);
+      });
+      for (a = 0; a < vO6.Api_listServer.length; a++) {
+        var v547 = vO6.Api_listServer[a].serverUrl;
+        var v548 = vO6.Api_listServer[a].name;
+        var v549 = vO6.Api_listServer[a].region;
+        let v550 = document.createElement("p");
+        v550.value = v547;
+        v550.innerHTML = v548;
+        if (v549 == "peru") {
+          $(".servers-peru").prepend(v550);
+        } else if (v549 == "mexico") {
+          $(".servers-mexico").prepend(v550);
+        } else if (v549 == "eeuu") {
+          $(".servers-eeuu").prepend(v550);
+        } else if (v549 == "canada") {
+          $(".servers-canada").prepend(v550);
+        } else if (v549 == "germania") {
+          $(".servers-germania").prepend(v550);
+        } else if (v549 == "francia") {
+          $(".servers-francia").prepend(v550);
+        } else if (v549 == "singapur") {
+          $(".servers-singapur").prepend(v550);
+        } else if (v549 == "japon") {
+          $(".servers-japon").prepend(v550);
+        } else if (v549 == "australia") {
+          $(".servers-australia").prepend(v550);
+        } else if (v549 == "granbretana") {
+          $(".servers-granbretana").prepend(v550);
+        }
+        $(v550).attr("id", v549);
+        $(v550).attr("class", "selectSala");
+        $(v550).attr("value", v548);
+        $(v550).click(function () {
+          let v551 = $(this).find("#svhiep .valu").text().trim();
+          vO7.setServer(v551);
+          let v552 = $(this).val();
+          vO7.containerImgS.texture = vO7.onclickServer;
+          retundFlagError();
+          window.server_url = v552;
+          $("#mm-action-play").click();
+          $("#adbl-continue").click();
+        });
       }
     }
     function f103() {
