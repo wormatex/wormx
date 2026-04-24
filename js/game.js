@@ -9288,12 +9288,44 @@ $("#sel_top").change(function () {
         theoKzObjects.FoodShadow = $(this).val();
         localStorage.ComidaShadow = theoKzObjects.FoodShadow;
       });
-      $("#mm-advice-cont").html(
-        '\n        <div class="vietnam" style="display: grid !important; grid-template-columns: 1fr 1fr 1fr; gap: 8.5px;">\n          <input type="button" value="FULL SCREEN" class="fullscreen_button">\n         \n          </div>\n      '
-      );
-      $(".mm-merchant-cont").html(
-        '\n  <div style="display: flex; justify-content: center; align-items: center;margin-top:10px">\n    <a href="https://www.youtube.com/WORMX" target="_blank" style="margin-right: 10px;">\n      <img src="https://wormateup.live/images/hiep_img/" alt="" width="155">\n    </a>\n    <a href="https://wormateup.live.com" target="_blank">\n      <img src="https://i.imgur.com/V.png" alt="" width="155">\n    </a>\n  </div>'
-      );
+      $("#mm-advice-cont").html(`
+  <div class="vietnam" style="
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 8.5px;
+  ">
+    <input
+      type="button"
+      value="FULLSCREEN"
+      class="fullscreen_button"
+      style="
+        background: orange;
+        color: white;
+        border: 1.5px solid rgba(0,0,0,0.65);
+        border-radius: 8px;
+        font-weight: 800;
+        text-shadow: 1px 1px 2px #000;
+        cursor: pointer;
+      "
+    >
+
+    <input
+      type="button"
+      value="SKINLAB"
+      class="skinlab_button"
+      style="
+        background: #008cff;
+        color: white;
+        border: 1.5px solid rgba(0,0,0,0.65);
+        border-radius: 8px;
+        font-weight: 800;
+        text-shadow: 1px 1px 2px #000;
+        cursor: pointer;
+      "
+      onclick="window.open('https://wormx.iraqcraft.sore', '_blank')"
+    >
+  </div>
+`);
       $(document).ready(function () {
         $(".fullscreen_button").on("click", function () {
           if (
