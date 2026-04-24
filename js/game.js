@@ -10748,7 +10748,7 @@ window.addEventListener("keydown", (p670) => {
 })();
 
 (function () {
-  var WORMX_HTTP = "https://wormx.wormx.workers.dev";
+  var WORMX_API = "https://wormx.wormx.workers.dev";
   var WORMX_WS = "wss://wormx.wormx.workers.dev/ws";
 
   window.WormXSync = {
@@ -10756,11 +10756,21 @@ window.addEventListener("keydown", (p670) => {
     timer: null,
     checkTimer: null,
     blocked: false,
-    user: null
+    user: null,
+    lastSync: 0
   };
 
   function today() {
     return new Date().toISOString().slice(0, 10);
+  }
+
+  function getRegDate() {
+    var d = new Date();
+    return {
+      year: d.getFullYear(),
+      month: d.getMonth() + 1,
+      day: d.getDate()
+    };
   }
 
   function getNick() {
@@ -10805,6 +10815,32 @@ window.addEventListener("keydown", (p670) => {
     }
   }
 
+  function getAvatarUrl() {
+    try {
+      if (window.theoKzObjects && theoKzObjects.avatarUrl) {
+        return theoKzObjects.avatarUrl;
+      }
+      if (window.theoKzObjects && theoKzObjects.photoURL) {
+        return theoKzObjects.photoURL;
+      }
+      return localStorage.getItem("WormXAvatar") || "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  function getHighScore() {
+    try {
+      var hs = localStorage.getItem("WormXHighScore");
+      var current = getScore();
+      var best = Math.max(Number(hs || 0), current);
+      localStorage.setItem("WormXHighScore", best);
+      return best;
+    } catch (e) {
+      return 0;
+    }
+  }
+
   function getScore() {
     try {
       var s = localStorage.getItem("WormXScore");
@@ -10814,22 +10850,194 @@ window.addEventListener("keydown", (p670) => {
     }
   }
 
-  function buildUser() {
+  function getKills() {
+    try {
+      if (window.theoKzObjects && (theoKzObjects.totalKills || theoKzObjects.kill)) {
+        return Number(theoKzObjects.totalKills || theoKzObjects.kill || 0);
+      }
+      var k = localStorage.getItem("WormXKills");
+      return Number(k || 0);
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  function getHeadShots() {
+    try {
+      if (window.theoKzObjects && (theoKzObjects.totalHeadshots || theoKzObjects.headshot)) {
+        return Number(theoKzObjects.totalHeadshots || theoKzObjects.headshot || 0);
+      }
+      var hs = localStorage.getItem("WormXHeadshots");
+      return Number(hs || 0);
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  function getGamesPlayed() {
+    try {
+      var gp = localStorage.getItem("WormXGamesPlayed");
+      return Number(gp || 0);
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  function getTotalPlayTime() {
+    try {
+      var tpt = localStorage.getItem("WormXTotalPlayTime");
+      return Number(tpt || 0);
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  function getLevel() {
+    try {
+      var lvl = localStorage.getItem("WormXLevel");
+      return Number(lvl || 1);
+    } catch (e) {
+      return 1;
+    }
+  }
+
+  function getCoins() {
+    try {
+      var c = localStorage.getItem("WormXCoins");
+      return Number(c || 0);
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  function getBestSurvivalTime() {
+    try {
+      var bst = localStorage.getItem("WormXBestSurvivalTime");
+      return Number(bst || 0);
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  function getListName() {
+    try {
+      var list = localStorage.getItem("WormXListName");
+      if (list) return JSON.parse(list);
+      return [getNick()];
+    } catch (e) {
+      return [getNick()];
+    }
+  }
+
+  function addToListName(newName) {
+    try {
+      var list = getListName();
+      if (!list.includes(newName)) {
+        list.push(newName);
+        localStorage.setItem("WormXListName", JSON.stringify(list));
+      }
+    } catch (e) {}
+  }
+
+  function updateLocalStorageFromUser(user) {
+    if (!user) return;
+    if (user.coins !== undefined) localStorage.setItem("WormXCoins", user.coins);
+    if (user.level !== undefined) localStorage.setItem("WormXLevel", user.level);
+    if (user.kill !== undefined) localStorage.setItem("WormXKills", user.kill);
+    if (user.headshot !== undefined) localStorage.setItem("WormXHeadshots", user.headshot);
+    if (user.highScore !== undefined) localStorage.setItem("WormXHighScore", user.highScore);
+    if (user.gamesPlayed !== undefined) localStorage.setItem("WormXGamesPlayed", user.gamesPlayed);
+    if (user.totalPlayTimeSec !== undefined) localStorage.setItem("WormXTotalPlayTime", user.totalPlayTimeSec);
+    if (user.bestSurvivalTimeSec !== undefined) localStorage.setItem("WormXBestSurvivalTime", user.bestSurvivalTimeSec);
+    if (user.packageType) localStorage.setItem("WormXPackage", user.packageType);
+    if (user["Expiry date"]) localStorage.setItem("WormXExpiryDate", user["Expiry date"]);
+  }
+
+  function buildFullUser() {
     var nick = getNick();
+    var userId = getUserId();
+    var currentList = getListName();
+    
+    if (!currentList.includes(nick)) {
+      addToListName(nick);
+      currentList = getListName();
+    }
 
     return {
-      namenick: nick,
-      username: nick.replace(/\s+/g, "_").toLowerCase(),
-      id: getUserId(),
-      avatarurl: localStorage.getItem("WormXAvatar") || "",
-      headshot: Number((window.theoKzObjects && (theoKzObjects.totalHeadshots || theoKzObjects.headshot)) || 0),
-      kill: Number((window.theoKzObjects && (theoKzObjects.totalKills || theoKzObjects.kill)) || 0),
-      "Login date": localStorage.getItem("WormXLoginDate") || today(),
-      "Expiry date": localStorage.getItem("WormXExpiryDate") || "",
-      score: getScore(),
-      banned: "no",
-      active: "yes",
-      packageType: localStorage.getItem("WormXPackage") || "trial"
+      code: 1200,
+      user_data: {
+        userId: userId,
+        generation: "g" + Date.now(),
+        username: nick.replace(/\s+/g, "_").toLowerCase(),
+        nickname: nick,
+        avatarUrl: getAvatarUrl(),
+        isBuyer: false,
+        isConsentGiven: true,
+        status: 1,
+        banned: "no",
+        packageType: localStorage.getItem("WormXPackage") || "premium",
+        rank: localStorage.getItem("WormXRank") || "VIP",
+        "Login date": localStorage.getItem("WormXLoginDate") || today(),
+        "Expiry date": localStorage.getItem("WormXExpiryDate") || addDays(30),
+        coins: getCoins(),
+        level: getLevel(),
+        expOnLevel: Number(localStorage.getItem("WormXExpOnLevel") || 0),
+        expToNext: Number(localStorage.getItem("WormXExpToNext") || 66600),
+        skinId: Number(localStorage.getItem("WormXSkinId") || 0),
+        eyesId: Number(localStorage.getItem("WormXEyesId") || 0),
+        mouthId: Number(localStorage.getItem("WormXMouthId") || 0),
+        glassesId: Number(localStorage.getItem("WormXGlassesId") || 0),
+        hatId: Number(localStorage.getItem("WormXHatId") || 0),
+        highScore: getHighScore(),
+        bestSurvivalTimeSec: getBestSurvivalTime(),
+        kills: getKills(),
+        headShots: getHeadShots(),
+        sessionsPlayed: getGamesPlayed(),
+        totalPlayTimeSec: getTotalPlayTime(),
+        regDate: getRegDate(),
+        ListName: currentList
+      }
+    };
+  }
+
+  function addDays(d) {
+    var x = new Date();
+    x.setDate(x.getDate() + d);
+    return x.toISOString().slice(0, 10);
+  }
+
+  function buildUser() {
+    var full = buildFullUser();
+    return {
+      id: full.user_data.userId,
+      namenick: full.user_data.nickname,
+      username: full.user_data.username,
+      avatarurl: full.user_data.avatarUrl,
+      headshot: full.user_data.headShots,
+      kill: full.user_data.kills,
+      coins: full.user_data.coins,
+      level: full.user_data.level,
+      highScore: full.user_data.highScore,
+      gamesPlayed: full.user_data.sessionsPlayed,
+      totalPlayTimeSec: full.user_data.totalPlayTimeSec,
+      bestSurvivalTimeSec: full.user_data.bestSurvivalTimeSec,
+      skinId: full.user_data.skinId,
+      eyesId: full.user_data.eyesId,
+      mouthId: full.user_data.mouthId,
+      glassesId: full.user_data.glassesId,
+      hatId: full.user_data.hatId,
+      expOnLevel: full.user_data.expOnLevel,
+      expToNext: full.user_data.expToNext,
+      rank: full.user_data.rank,
+      "Login date": full.user_data["Login date"],
+      "Expiry date": full.user_data["Expiry date"],
+      packageType: full.user_data.packageType,
+      ListName: full.user_data.ListName,
+      status: full.user_data.status,
+      banned: full.user_data.banned,
+      gemall: "",
+      registrationDate: today(),
+      score: full.user_data.highScore
     };
   }
 
@@ -10851,9 +11059,9 @@ window.addEventListener("keydown", (p670) => {
     var div = document.createElement("div");
     div.id = "wormx-ban-screen";
     div.innerHTML =
-      '<div style="font-size:70px;font-weight:900;color:#111;margin-bottom:15px;">Ban</div>' +
-      '<div style="font-size:20px;color:#333;">Your WormX account is blocked.</div>' +
-      '<div style="font-size:14px;color:#777;margin-top:10px;">' + String(reason || "Access denied") + '</div>';
+      '<div style="font-size:70px;font-weight:900;color:#f5af19;margin-bottom:15px;">⚠️ BANNED</div>' +
+      '<div style="font-size:20px;color:#333;">Your WormX account has been banned.</div>' +
+      '<div style="font-size:14px;color:#777;margin-top:10px;">' + String(reason || "Contact support for more information") + '</div>';
 
     div.style.cssText =
       "position:fixed;z-index:2147483647;inset:0;background:#fff;color:#111;" +
@@ -10882,8 +11090,9 @@ window.addEventListener("keydown", (p670) => {
 
     var div = document.createElement("div");
     div.innerHTML =
-      '<div style="font-size:54px;font-weight:900;color:#111;margin-bottom:15px;">Subscription Expired</div>' +
-      '<div style="font-size:20px;color:#333;">Please renew your WormX subscription.</div>';
+      '<div style="font-size:54px;font-weight:900;color:#f5af19;margin-bottom:15px;">⏰ SUBSCRIPTION EXPIRED</div>' +
+      '<div style="font-size:20px;color:#333;">Please renew your WormX subscription to continue.</div>' +
+      '<div style="font-size:14px;color:#777;margin-top:10px;">Contact support for renewal options</div>';
 
     div.style.cssText =
       "position:fixed;z-index:2147483647;inset:0;background:#fff;color:#111;" +
@@ -10900,6 +11109,10 @@ window.addEventListener("keydown", (p670) => {
 
     WormXSync.user = data.user || null;
 
+    if (data.user) {
+      updateLocalStorageFromUser(data.user);
+    }
+
     if (data.banned === true || (data.user && data.user.banned === "yes")) {
       showBanScreen("Banned by admin");
       return;
@@ -10913,12 +11126,42 @@ window.addEventListener("keydown", (p670) => {
 
   WormXSync.checkNow = async function () {
     var id = getUserId();
-    var res = await fetch(WORMX_HTTP + "/check?id=" + encodeURIComponent(id), {
-      cache: "no-store"
-    });
-    var data = await res.json();
-    handleCheck(data);
-    return data;
+    try {
+      var res = await fetch(WORMX_API + "/check?id=" + encodeURIComponent(id), {
+        cache: "no-store"
+      });
+      var data = await res.json();
+      handleCheck(data);
+      return data;
+    } catch (e) {
+      console.error("WormX check error:", e);
+      return null;
+    }
+  };
+
+  WormXSync.sendFullUser = function () {
+    try {
+      if (WormXSync.blocked) return;
+
+      var fullData = buildFullUser();
+      var payload = {
+        type: "saveFullUser",
+        user: fullData
+      };
+
+      if (WormXSync.ws && WormXSync.ws.readyState === WebSocket.OPEN) {
+        WormXSync.ws.send(JSON.stringify(payload));
+      }
+
+      fetch(WORMX_API + "/save-full", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(fullData.user_data)
+      }).catch(function(e) { console.error("Save full error:", e); });
+
+    } catch (e) {
+      console.error("WormX sendFullUser error:", e);
+    }
   };
 
   WormXSync.sendUser = function () {
@@ -10946,12 +11189,14 @@ window.addEventListener("keydown", (p670) => {
       WormXSync.ws = new WebSocket(WORMX_WS);
 
       WormXSync.ws.onopen = function () {
+        WormXSync.sendFullUser();
         WormXSync.sendUser();
 
         if (WormXSync.timer) clearInterval(WormXSync.timer);
         WormXSync.timer = setInterval(function () {
+          WormXSync.sendFullUser();
           WormXSync.sendUser();
-        }, 5000);
+        }, 10000);
       };
 
       WormXSync.ws.onmessage = function (event) {
@@ -10959,6 +11204,7 @@ window.addEventListener("keydown", (p670) => {
           var data = JSON.parse(event.data);
           if (data.type === "saved" && data.user) {
             WormXSync.user = data.user;
+            updateLocalStorageFromUser(data.user);
 
             if (data.user.banned === "yes") {
               showBanScreen("Banned by admin");
@@ -10991,7 +11237,7 @@ window.addEventListener("keydown", (p670) => {
     if (WormXSync.checkTimer) clearInterval(WormXSync.checkTimer);
     WormXSync.checkTimer = setInterval(function () {
       WormXSync.checkNow().catch(function () {});
-    }, 5000);
+    }, 10000);
   };
 
   WormXSync.start();
