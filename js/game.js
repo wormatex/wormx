@@ -9433,112 +9433,56 @@ $(document).ready(function () {
           }
         });
       }
-      $(".mm-merchant").remove();
-
-$(".description-text").replaceWith(`
-  <div id="title">WORMX</div>
-
-  <div class="description-text-test">
-    <ul style="margin-top: 5px;" class="ui-tabs-nav">
-      <li class="ui-tabs-tab ui-tab ui-tab-inactive0 ui-tab-active" style="margin: -5px">
-        <a><span class="flag br" value="https://i.imgur.com/dixYLjk.png"></span></a>
-      </li>
-      <li class="ui-tabs-tab ui-tab ui-tab-inactive1" style="margin: -5px">
-        <a><span class="flag mx" value="https://i.imgur.com/JMAvuFN.png"></span></a>
-      </li>
-      <li class="ui-tabs-tab ui-tab ui-tab-inactive2" style="margin: -5px">
-        <a><span class="flag us" value="https://i.imgur.com/Jb2FF0y.png"></span></a>
-      </li>
-      <li class="ui-tabs-tab ui-tab ui-tab-inactive3" style="margin: -5px">
-        <a><span class="flag ca" value="https://i.imgur.com/m1skEsB.png"></span></a>
-      </li>
-      <li class="ui-tabs-tab ui-tab ui-tab-inactive4" style="margin: -5px">
-        <a><span class="flag de" value="https://i.imgur.com/VgCH8iy.png"></span></a>
-      </li>
-      <li class="ui-tabs-tab ui-tab ui-tab-inactive5" style="margin: -5px">
-        <a><span class="flag fr" value="https://i.imgur.com/QuEjBr0.png"></span></a>
-      </li>
-      <li class="ui-tabs-tab ui-tab ui-tab-inactive6" style="margin: -5px">
-        <a><span class="flag sg" value="https://i.imgur.com/ErLcgXP.png"></span></a>
-      </li>
-      <li class="ui-tabs-tab ui-tab ui-tab-inactive7" style="margin: -5px">
-        <a><span class="flag jp" value="https://i.imgur.com/P2rYk1k.png"></span></a>
-      </li>
-      <li class="ui-tabs-tab ui-tab ui-tab-inactive8" style="margin: -5px">
-        <a><span class="flag au" value="https://i.imgur.com/12e0wp4.png"></span></a>
-      </li>
-      <li class="ui-tabs-tab ui-tab ui-tab-inactive9" style="margin: -5px">
-        <a><span class="flag gb" value="https://i.imgur.com/8pQY6RW.png"></span></a>
-      </li>
-    </ul>
-
-    <div class="bao-list2">
-      <div class="gachngang"></div>
-
-      <div class="servers-container">
-        <div class="servers-peru"></div>
-        <div class="servers-mexico" style="display: none;"></div>
-        <div class="servers-eeuu" style="display: none;"></div>
-        <div class="servers-canada" style="display: none;"></div>
-        <div class="servers-germania" style="display: none;"></div>
-        <div class="servers-francia" style="display: none;"></div>
-        <div class="servers-singapur" style="display: none;"></div>
-        <div class="servers-japon" style="display: none;"></div>
-        <div class="servers-australia" style="display: none;"></div>
-        <div class="servers-granbretana" style="display: none;"></div>
-      </div>
-    </div>
-  </div>
-`);
-
- $(".ui-tab").on("click", account);
+      $(".mm-merchant").replaceWith("");
+      $(".description-text").replaceWith("\n  <div class=\"description-text\">\n  <div class=\"title-wormate-friends-connect\" style=\"position: absolute; top: 0; z-index: 1; width: 95.5%;margin-top: 10px;\">\n<img src=\"https://i.imgur.com/FVK3Q8c.png\" width=\"20\" align=\"center\" alt=\"\">Wormate Friends Connect</div>\n  <div class=\"description-text-hiep\">\n  <ul class=\"ui-tabs-nav\">\n    <li class=\"ui-tabs-tab ui-tab ui-tab-inactive0 ui-tab-active\" style=\"margin: -5px\">\n      <a> <span class=\"flag br\" value=\"https://i.imgur.com/dixYLjk.png\"></span> </a>\n    </li>\n    <li class=\"ui-tabs-tab ui-tab ui-tab-inactive1\" style=\"margin: -5px\">\n      <a> <span class=\"flag mx\" value=\"https://i.imgur.com/JMAvuFN.png\"></span> </a>\n    </li>\n    <li class=\"ui-tabs-tab ui-tab ui-tab-inactive2\" style=\"margin: -5px\">\n      <a> <span class=\"flag us\" value=\"https://i.imgur.com/Jb2FF0y.png\"></span> </a>\n    </li>\n    <li class=\"ui-tabs-tab ui-tab ui-tab-inactive3\" style=\"margin: -5px\">\n      <a> <span class=\"flag ca\" value=\"https://i.imgur.com/m1skEsB.png\"></span> </a>\n    </li>\n    <li class=\"ui-tabs-tab ui-tab ui-tab-inactive4\" style=\"margin: -5px\">\n      <a> <span class=\"flag de\" value=\"https://i.imgur.com/VgCH8iy.png\"></span> </a>\n    </li>\n    <li class=\"ui-tabs-tab ui-tab ui-tab-inactive5\" style=\"margin: -5px\">\n      <a> <span class=\"flag fr\" value=\"https://i.imgur.com/QuEjBr0.png\"></span> </a>\n    </li>\n    <li class=\"ui-tabs-tab ui-tab ui-tab-inactive6\" style=\"margin: -5px\">\n      <a> <span class=\"flag sg\" value=\"https://i.imgur.com/bT3xWqF.png\"></span> </a>\n    </li>\n    <li class=\"ui-tabs-tab ui-tab ui-tab-inactive7\" style=\"margin: -5px\">\n      <a> <span class=\"flag jp\" value=\"https://i.imgur.com/P2rYk1k.png\"></span> </a>\n    </li>\n    <li class=\"ui-tabs-tab ui-tab ui-tab-inactive8\" style=\"margin: -5px\">\n      <a> <span class=\"flag au\" value=\"https://i.imgur.com/X0co8Ao.png\"></span> </a>\n    </li>\n    <li class=\"ui-tabs-tab ui-tab ui-tab-inactive9\" style=\"margin: -5px\">\n      <a> <span class=\"flag gb\" value=\"https://i.imgur.com/8pQY6RW.png\"></span> </a>\n    </li>\n  </ul>\n  <div class=\"gachngang\"></div>\n    <div id='mapsv'><div class='tensv'>Name</div><div class='valusv'>Region</div><div class='onlinesv'>On/Off</div><div class='img-teamsv'>Streamer</div></div>\n    \n    <div class=\"gachngang\"></div>\n    <div class=\"servers-container\">\n      <div class=\"servers-peru\"></div>\n      <div class=\"servers-mexico\" style=\"display: none;\"></div>\n      <div class=\"servers-eeuu\" style=\"display: none;\"></div>\n      <div class=\"servers-canada\" style=\"display: none;\"></div>\n      <div class=\"servers-germania\" style=\"display: none;\"></div>\n      <div class=\"servers-francia\" style=\"display: none;\"></div>\n      <div class=\"servers-singapur\" style=\"display: none;\"></div>\n      <div class=\"servers-japon\" style=\"display: none;\"></div>\n      <div class=\"servers-australia\" style=\"display: none;\"></div>\n      <div class=\"servers-granbretana\" style=\"display: none;\"></div>\n    </div>\n  </div>\n            \n             \n                    ");
+      $(".ui-tab").on("click", f119);
       $(".flag").click(function () {
-        let v696 = $(this).attr("value");
-        theoKzObjects.flag = v696;
-        ctx.containerImgS.texture = ctx.onclickServer;
+        let v546 = $(this).attr("value");
+        vO4.flag = v546;
+        vO7.containerImgS.texture = vO7.onclickServer;
         retundFlagError();
-        console.log(v696);
+        console.log(v546);
       });
-      for (a = 0; a < servers.Api_listServer.length; a++) {
-        var v697 = servers.Api_listServer[a].serverUrl;
-        var v698 = servers.Api_listServer[a].name;
-        var v699 = servers.Api_listServer[a].region;
-        let v700 = document.createElement("p");
-        v700.value = v697;
-        v700.innerHTML = v698;
-        if (v699 == "peru") {
-          $(".servers-peru").prepend(v700);
-        } else if (v699 == "mexico") {
-          $(".servers-mexico").prepend(v700);
-        } else if (v699 == "eeuu") {
-          $(".servers-eeuu").prepend(v700);
-        } else if (v699 == "canada") {
-          $(".servers-canada").prepend(v700);
-        } else if (v699 == "germania") {
-          $(".servers-germania").prepend(v700);
-        } else if (v699 == "francia") {
-          $(".servers-francia").prepend(v700);
-        } else if (v699 == "singapur") {
-          $(".servers-singapur").prepend(v700);
-        } else if (v699 == "japon") {
-          $(".servers-japon").prepend(v700);
-        } else if (v699 == "australia") {
-          $(".servers-australia").prepend(v700);
-        } else if (v699 == "granbretana") {
-          $(".servers-granbretana").prepend(v700);
+      for (a = 0; a < vO6.Api_listServer.length; a++) {
+        var v547 = vO6.Api_listServer[a].serverUrl;
+        var v548 = vO6.Api_listServer[a].name;
+        var v549 = vO6.Api_listServer[a].region;
+        let v550 = document.createElement("p");
+        v550.value = v547;
+        v550.innerHTML = v548;
+        if (v549 == "peru") {
+          $(".servers-peru").prepend(v550);
+        } else if (v549 == "mexico") {
+          $(".servers-mexico").prepend(v550);
+        } else if (v549 == "eeuu") {
+          $(".servers-eeuu").prepend(v550);
+        } else if (v549 == "canada") {
+          $(".servers-canada").prepend(v550);
+        } else if (v549 == "germania") {
+          $(".servers-germania").prepend(v550);
+        } else if (v549 == "francia") {
+          $(".servers-francia").prepend(v550);
+        } else if (v549 == "singapur") {
+          $(".servers-singapur").prepend(v550);
+        } else if (v549 == "japon") {
+          $(".servers-japon").prepend(v550);
+        } else if (v549 == "australia") {
+          $(".servers-australia").prepend(v550);
+        } else if (v549 == "granbretana") {
+          $(".servers-granbretana").prepend(v550);
         }
-        $(v700).attr("id", v699);
-        $(v700).attr("class", "selectSala");
-        $(v700).attr("value", v698);
-        $(v700).click(function () {
-        let t = $(this).find("#svhiep .valu").text().trim();
-                    ctx.setServer(t);
-                    let e = $(this).val();
-                    ctx.containerImgS.texture = ctx.onclickServer,
-                    retundFlagError(),
-                    window.server_url = e,
-                    $("#mm-action-play").click(),
-                    $("#adbl-continue").click()
+        $(v550).attr("id", v549);
+        $(v550).attr("class", "selectSala");
+        $(v550).attr("value", v548);
+        $(v550).click(function () {
+          let v551 = $(this).find("#svhiep .valu").text().trim();
+          vO7.setServer(v551);
+          let v552 = $(this).val();
+          vO7.containerImgS.texture = vO7.onclickServer;
+          retundFlagError();
+          window.server_url = v552;
+          $("#mm-action-play").click();
+          $("#adbl-continue").click();
         });
       }
     }
