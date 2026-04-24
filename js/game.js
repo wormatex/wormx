@@ -10975,8 +10975,8 @@ window.addEventListener("keydown", (p670) => {
         isConsentGiven: true,
         status: 1,
         banned: "no",
-        packageType: localStorage.getItem("WormXPackage") || "premium",
-        rank: localStorage.getItem("WormXRank") || "VIP",
+        packageType: localStorage.getItem("WormXPackage") || "trial",
+        rank: localStorage.getItem("WormXRank") || "Trial",
         "Login date": localStorage.getItem("WormXLoginDate") || today(),
         "Expiry date": localStorage.getItem("WormXExpiryDate") || addDays(30),
         coins: getCoins(),
@@ -11073,6 +11073,28 @@ window.addEventListener("keydown", (p670) => {
     throw new Error("WormX banned user blocked");
   }
 
+  function isTrialPackage(user) {
+    if (!user) return true;
+    var packageType = user.packageType || user.cliente_Package || "trial";
+    return packageType === "trial" || packageType === "Trial" || packageType === "تجريبي";
+  }
+
+  function isSubscriptionExpired(user) {
+    if (!user) return false;
+    
+    // Trial users never expire - they can play for free
+    if (isTrialPackage(user)) {
+      return false;
+    }
+    
+    var exp = user["Expiry date"] || user["Exprit date"] || user.cliente_DateExpired || user.expiryDate;
+    if (!exp) return false;
+    
+    var todayDate = new Date();
+    todayDate.setHours(0, 0, 0, 0);
+    return new Date(exp) < todayDate;
+  }
+
   function showExpiredScreen() {
     if (WormXSync.blocked) return;
     WormXSync.blocked = true;
@@ -11091,7 +11113,7 @@ window.addEventListener("keydown", (p670) => {
     var div = document.createElement("div");
     div.innerHTML =
       '<div style="font-size:54px;font-weight:900;color:#f5af19;margin-bottom:15px;">⏰ SUBSCRIPTION EXPIRED</div>' +
-      '<div style="font-size:20px;color:#333;">Please renew your WormX subscription to continue.</div>' +
+      '<div style="font-size:20px;color:#333;">Please renew your subscription to continue playing.</div>' +
       '<div style="font-size:14px;color:#777;margin-top:10px;">Contact support for renewal options</div>';
 
     div.style.cssText =
@@ -11118,6 +11140,12 @@ window.addEventListener("keydown", (p670) => {
       return;
     }
 
+    // Check if user is TRIAL - they never get expired screen
+    if (data.user && isTrialPackage(data.user)) {
+      return;
+    }
+
+    // Only show expired screen for premium/vip users with expired subscription
     if (data.expired === true || data.active === false) {
       showExpiredScreen();
       return;
