@@ -9509,54 +9509,54 @@ $(".description-text").replaceWith(`
   </div>
 `);
 
-$(".ui-tab").on("click", f119);
+$(".ui-tab").on("click", account);
       $(".flag").click(function () {
-        let v546 = $(this).attr("value");
-        vO4.flag = v546;
-        vO7.containerImgS.texture = vO7.onclickServer;
+        let v696 = $(this).attr("value");
+        theoKzObjects.flag = v696;
+        ctx.containerImgS.texture = ctx.onclickServer;
         retundFlagError();
-        console.log(v546);
+        console.log(v696);
       });
-      for (a = 0; a < vO6.Api_listServer.length; a++) {
-        var v547 = vO6.Api_listServer[a].serverUrl;
-        var v548 = vO6.Api_listServer[a].name;
-        var v549 = vO6.Api_listServer[a].region;
-        let v550 = document.createElement("p");
-        v550.value = v547;
-        v550.innerHTML = v548;
-        if (v549 == "peru") {
-          $(".servers-peru").prepend(v550);
-        } else if (v549 == "mexico") {
-          $(".servers-mexico").prepend(v550);
-        } else if (v549 == "eeuu") {
-          $(".servers-eeuu").prepend(v550);
-        } else if (v549 == "canada") {
-          $(".servers-canada").prepend(v550);
-        } else if (v549 == "germania") {
-          $(".servers-germania").prepend(v550);
-        } else if (v549 == "francia") {
-          $(".servers-francia").prepend(v550);
-        } else if (v549 == "singapur") {
-          $(".servers-singapur").prepend(v550);
-        } else if (v549 == "japon") {
-          $(".servers-japon").prepend(v550);
-        } else if (v549 == "australia") {
-          $(".servers-australia").prepend(v550);
-        } else if (v549 == "granbretana") {
-          $(".servers-granbretana").prepend(v550);
+      for (a = 0; a < servers.Api_listServer.length; a++) {
+        var v697 = servers.Api_listServer[a].serverUrl;
+        var v698 = servers.Api_listServer[a].name;
+        var v699 = servers.Api_listServer[a].region;
+        let v700 = document.createElement("p");
+        v700.value = v697;
+        v700.innerHTML = v698;
+        if (v699 == "peru") {
+          $(".servers-peru").prepend(v700);
+        } else if (v699 == "mexico") {
+          $(".servers-mexico").prepend(v700);
+        } else if (v699 == "eeuu") {
+          $(".servers-eeuu").prepend(v700);
+        } else if (v699 == "canada") {
+          $(".servers-canada").prepend(v700);
+        } else if (v699 == "germania") {
+          $(".servers-germania").prepend(v700);
+        } else if (v699 == "francia") {
+          $(".servers-francia").prepend(v700);
+        } else if (v699 == "singapur") {
+          $(".servers-singapur").prepend(v700);
+        } else if (v699 == "japon") {
+          $(".servers-japon").prepend(v700);
+        } else if (v699 == "australia") {
+          $(".servers-australia").prepend(v700);
+        } else if (v699 == "granbretana") {
+          $(".servers-granbretana").prepend(v700);
         }
-        $(v550).attr("id", v549);
-        $(v550).attr("class", "selectSala");
-        $(v550).attr("value", v548);
-        $(v550).click(function () {
-          let v551 = $(this).find("#svhiep .valu").text().trim();
-          vO7.setServer(v551);
-          let v552 = $(this).val();
-          vO7.containerImgS.texture = vO7.onclickServer;
-          retundFlagError();
-          window.server_url = v552;
-          $("#mm-action-play").click();
-          $("#adbl-continue").click();
+        $(v700).attr("id", v699);
+        $(v700).attr("class", "selectSala");
+        $(v700).attr("value", v698);
+        $(v700).click(function () {
+        let t = $(this).find("#svhiep .valu").text().trim();
+                    ctx.setServer(t);
+                    let e = $(this).val();
+                    ctx.containerImgS.texture = ctx.onclickServer,
+                    retundFlagError(),
+                    window.server_url = e,
+                    $("#mm-action-play").click(),
+                    $("#adbl-continue").click()
         });
       }
     }
