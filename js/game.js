@@ -9288,69 +9288,85 @@ $("#sel_top").change(function () {
         theoKzObjects.FoodShadow = $(this).val();
         localStorage.ComidaShadow = theoKzObjects.FoodShadow;
       });
-      $("#mm-advice-cont").html(`
+     $("#mm-advice-cont").html(`
   <div class="vietnam" style="
     display: grid !important;
     grid-template-columns: 1fr 1fr;
-    gap: 8.5px;
+    gap: 10px;
+    padding: 5px;
   ">
-    <input
-      type="button"
-      value="FULLSCREEN"
-      class="fullscreen_button"
-      style="
-        background: orange;
-        color: white;
-        border: 1.5px solid rgba(0,0,0,0.65);
-        border-radius: 8px;
-        font-weight: 800;
-        text-shadow: 1px 1px 2px #000;
-        cursor: pointer;
-      "
-    >
+    
+    <button class="fullscreen_button" style="
+      height: 45px;
+      background: linear-gradient(180deg, #ff9a1f, #ff7b00);
+      color: #fff;
+      border: 1.5px solid rgba(0,0,0,0.7);
+      border-radius: 10px;
+      font-weight: 800;
+      text-shadow: 1px 1px 2px #000;
+      cursor: pointer;
+      transition: 0.2s;
+    ">
+      FULLSCREEN
+    </button>
 
-    <input
-      type="button"
-      value="SKINLAB"
-      class="skinlab_button"
-      style="
-        background: #008cff;
-        color: white;
-        border: 1.5px solid rgba(0,0,0,0.65);
-        border-radius: 8px;
-        font-weight: 800;
-        text-shadow: 1px 1px 2px #000;
-        cursor: pointer;
-      "
-      onclick="window.open('https://wormx.iraqcraft.sore', '_blank')"
-    >
+    <button class="skinlab_button" style="
+      height: 45px;
+      background: linear-gradient(180deg, #2aa8ff, #0077ff);
+      color: #fff;
+      border: 1.5px solid rgba(0,0,0,0.7);
+      border-radius: 10px;
+      font-weight: 800;
+      text-shadow: 1px 1px 2px #000;
+      cursor: pointer;
+      transition: 0.2s;
+    ">
+      SKINLAB
+    </button>
+
   </div>
 `);
-      $(document).ready(function () {
-        $(".fullscreen_button").on("click", function () {
-          if (
-            (document.fullScreenElement &&
-              document.fullScreenElement !== null) ||
-            (!document.mozFullScreen && !document.webkitIsFullScreen)
-          ) {
-            if (document.documentElement.requestFullScreen) {
-              document.documentElement.requestFullScreen();
-            } else if (document.documentElement.mozRequestFullScreen) {
-              document.documentElement.mozRequestFullScreen();
-            } else if (document.documentElement.webkitRequestFullScreen) {
-              document.documentElement.webkitRequestFullScreen(
-                Element.ALLOW_KEYBOARD_INPUT
-              );
-            }
-          } else if (document.cancelFullScreen) {
-            document.cancelFullScreen();
-          } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-          } else if (document.webkitCancelFullScreen) {
-            document.webkitCancelFullScreen();
-          }
-        });
-      });
+
+$(document).ready(function () {
+
+  // FULLSCREEN
+  $(".fullscreen_button").on("click", function () {
+    if (
+      (document.fullScreenElement && document.fullScreenElement !== null) ||
+      (!document.mozFullScreen && !document.webkitIsFullScreen)
+    ) {
+      if (document.documentElement.requestFullScreen) {
+        document.documentElement.requestFullScreen();
+      } else if (document.documentElement.mozRequestFullScreen) {
+        document.documentElement.mozRequestFullScreen();
+      } else if (document.documentElement.webkitRequestFullScreen) {
+        document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+      }
+    } else if (document.cancelFullScreen) {
+      document.cancelFullScreen();
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if (document.webkitCancelFullScreen) {
+      document.webkitCancelFullScreen();
+    }
+  });
+
+  // SKINLAB
+  $(".skinlab_button").on("click", function () {
+    window.open("https://wormx.iraqcraft.sore", "_blank");
+  });
+
+  // Hover effect
+  $(".fullscreen_button, .skinlab_button").hover(
+    function () {
+      $(this).css("transform", "scale(1.05)");
+    },
+    function () {
+      $(this).css("transform", "scale(1)");
+    }
+  );
+
+});
       $("#hoisinh").click(function () {
         let v_0x2b5e54 = v_0x2b5e54;
         if (v_0x2b5e54) {
